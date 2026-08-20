@@ -36,7 +36,8 @@ const Dashboard = () => {
                     <p>₱4,850.00</p>
                 </div>
             </div>
-            {transactions.map((i, index) => (
+            <h2>Current Parking</h2>
+            {transactions.map((i) => (
                 <div key={i.id}>
                     <p>Plate: {i.plateNumber}</p>
                     <p>Vehicle: {i.vehicleType}</p>
