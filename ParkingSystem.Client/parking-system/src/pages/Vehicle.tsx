@@ -33,7 +33,6 @@ function Vehicle() {
     const [owner, setOwner] = useState("");
 
     const handleSaveVehicle = () => {
-        console.log("triggered")
         if (!plateNumber || !vehicleType || !owner) {
             return;
         }
