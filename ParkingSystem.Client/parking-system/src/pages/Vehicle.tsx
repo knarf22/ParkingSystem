@@ -25,26 +25,72 @@ function Vehicle() {
     ]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingVehicleId, setEditingVehicleId] = useState<number | null>(null);
+
 
     const [plateNumber, setPlateNumber] = useState("");
     const [vehicleType, setVehicleType] = useState("");
     const [owner, setOwner] = useState("");
 
-    const handleAddVehicle = () => {
-        const newVehicle: Vehicle = {
-            id: Date.now(),
-            plateNumber,
-            vehicleType,
-            owner,
-        };
+    const handleSaveVehicle = () => {
+        console.log("triggered")
+        if (!plateNumber || !vehicleType || !owner) {
+            return;
+        }
+        if (editingVehicleId != null) {
+            setVehicles(
+                vehicles.map((vehicle) =>
+                    vehicle.id === editingVehicleId
+                        ? {
+                            ...vehicle,
+                            plateNumber,
+                            vehicleType,
+                            owner
+                        }
+                        : vehicle
+                )
+            );
 
-        setVehicles([...vehicles, newVehicle]);
+        } else {
+            const newVehicle: Vehicle = {
+                id: Date.now(),
+                plateNumber,
+                vehicleType,
+                owner,
+            };
+            setVehicles([...vehicles, newVehicle])
+        }
+        resetForm();
 
+    };
+    const resetForm = () => {
         setPlateNumber("");
         setVehicleType("");
         setOwner("");
-
+        setEditingVehicleId(null);
         setIsModalOpen(false);
+    };
+    const handleEdit = (vehicle: Vehicle) => {
+        setEditingVehicleId(vehicle.id);
+
+        setPlateNumber(vehicle.plateNumber);
+        setVehicleType(vehicle.vehicleType);
+        setOwner(vehicle.owner);
+
+        setIsModalOpen(true);
+    };
+    const handleDelete = (id: number) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this vehicle?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        setVehicles(
+            vehicles.filter((vehicle) => vehicle.id !== id)
+        );
     };
 
     return (
@@ -114,6 +160,7 @@ function Vehicle() {
                                 <td className="px-6 py-4">
                                     <div className="flex gap-2">
                                         <button
+                                            onClick={() => handleEdit(vehicle)}
                                             type="button"
                                             className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100"
                                         >
@@ -121,6 +168,7 @@ function Vehicle() {
                                         </button>
 
                                         <button
+                                            onClick={() => handleDelete(vehicle.id)}
                                             type="button"
                                             className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
                                         >
@@ -137,8 +185,15 @@ function Vehicle() {
             {/* Add Vehicle Modal */}
             <Modal
                 isOpen={isModalOpen}
-                title="Add Vehicle"
-                onClose={() => setIsModalOpen(false)}
+                title={
+                    editingVehicleId !== null
+                        ? "Edit Vehicle"
+                        : "Add Vehicle"
+                }
+                onClose={resetForm}
+            // isOpen={isModalOpen}
+            // title="Add Vehicle"
+            // onClose={() => setIsModalOpen(false)}
             >
                 <div className="space-y-4">
 
@@ -213,10 +268,12 @@ function Vehicle() {
 
                         <button
                             type="button"
-                            onClick={handleAddVehicle}
+                            onClick={handleSaveVehicle}
                             className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
                         >
-                            Add Vehicle
+                            {editingVehicleId !== null
+                                ? "Save Changes"
+                                : "Add Vehicle"}
                         </button>
                     </div>
 
