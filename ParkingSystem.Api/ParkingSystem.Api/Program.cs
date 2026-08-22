@@ -27,27 +27,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ParkingDbContext>();
 
-    try
-    {
-        if (db.Database.CanConnect())
-        {
-            Console.WriteLine("DATABASE CONNECTION SUCCESSFUL");
-        }
-        else
-        {
-            Console.WriteLine("DATABASE CONNECTION FAILED");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("DATABASE CONNECTION ERROR:");
-        Console.WriteLine(ex.Message);
-    }
-}s
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

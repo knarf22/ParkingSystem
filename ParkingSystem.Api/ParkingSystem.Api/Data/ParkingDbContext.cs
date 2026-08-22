@@ -22,6 +22,18 @@ namespace ParkingSystem.Api.Data
                 .WithOne(t => t.Vehicle)
                 .HasForeignKey(t => t.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ParkingRate>()
+                .Property(p => p.FixedRate)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ParkingRate>()
+                .Property(p => p.ExceedingRate)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ParkingTransaction>()
+                .Property(p => p.DurationHours)
+                .HasPrecision(18, 2);
         }
     }
 }
