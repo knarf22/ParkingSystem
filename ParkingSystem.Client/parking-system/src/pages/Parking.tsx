@@ -1,4 +1,27 @@
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import type { ParkingTransaction } from "../types/parking";
+
 function Parking() {
+    const [transactions, setTransactions] = useState<ParkingTransaction[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const loadTransactions = async () => {
+        try {
+            const response = await api.get<ParkingTransaction[]>("/Parking");
+
+            setTransactions(response.data);
+        } catch (error) {
+            console.error("Failed to load parking transactions:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadTransactions();
+    }, []);
+
     return (
         <div>
             {/* Page Header */}
@@ -43,12 +66,11 @@ function Parking() {
                             className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         >
                             <option value="">Select vehicle type</option>
-                            <option value="car">Car</option>
-                            <option value="motorcycle">Motorcycle</option>
-                            <option value="van">Van</option>
+                            <option value="Car">Car</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Van">Van</option>
                         </select>
                     </div>
-
                 </div>
 
                 <div className="mt-6">
@@ -68,75 +90,76 @@ function Parking() {
                 </h3>
 
                 <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Plate Number
-                                </th>
 
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Vehicle
-                                </th>
+                    {loading ? (
+                        <div className="p-6 text-gray-500">
+                            Loading parking transactions...
+                        </div>
+                    ) : transactions.length === 0 ? (
+                        <div className="p-6 text-gray-500">
+                            No parking transactions found.
+                        </div>
+                    ) : (
+                        <table className="w-full text-left">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-4 text-sm font-semibold text-gray-600">
+                                        Plate Number
+                                    </th>
 
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Entry Time
-                                </th>
+                                    <th className="px-6 py-4 text-sm font-semibold text-gray-600">
+                                        Vehicle
+                                    </th>
 
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
+                                    <th className="px-6 py-4 text-sm font-semibold text-gray-600">
+                                        Entry Time
+                                    </th>
 
-                        <tbody>
-                            <tr className="border-t border-gray-100">
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    ABC-1234
-                                </td>
+                                    <th className="px-6 py-4 text-sm font-semibold text-gray-600">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
 
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    Car
-                                </td>
-
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    08:00 AM
-                                </td>
-
-                                <td className="px-6 py-4">
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
+                            <tbody>
+                                {transactions.map((transaction) => (
+                                    <tr
+                                        key={transaction.id}
+                                        className="border-t border-gray-100"
                                     >
-                                        Exit
-                                    </button>
-                                </td>
-                            </tr>
+                                        <td className="px-6 py-4 text-sm text-gray-700">
+                                            {transaction.plateNumber}
+                                        </td>
 
-                            <tr className="border-t border-gray-100">
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    XYZ-5678
-                                </td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">
+                                            {transaction.vehicleType}
+                                        </td>
 
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    Motorcycle
-                                </td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">
+                                            {new Date(
+                                                transaction.entryTime
+                                            ).toLocaleTimeString([], {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                        </td>
 
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    08:30 AM
-                                </td>
-
-                                <td className="px-6 py-4">
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-                                    >
-                                        Exit
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        <td className="px-6 py-4">
+                                            <span
+                                                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                                    transaction.status === "PARKED"
+                                                        ? "bg-green-100 text-green-700"
+                                                        : "bg-gray-100 text-gray-700"
+                                                }`}
+                                            >
+                                                {transaction.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
         </div>

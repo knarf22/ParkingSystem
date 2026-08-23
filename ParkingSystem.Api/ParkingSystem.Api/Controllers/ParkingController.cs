@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ParkingSystem.Api.Data;
+using ParkingSystem.Api.DTOs;
 using ParkingSystem.Api.Models;
+using ParkingSystem.Api.Services;
 
 namespace ParkingSystem.Api.Controllers
 {
@@ -10,28 +12,57 @@ namespace ParkingSystem.Api.Controllers
     public class ParkingController : ControllerBase
     {
         private readonly ParkingDbContext _context;
+        private readonly IParkingCalculationService _calculationService;
 
-        public ParkingController(ParkingDbContext context)
+        public ParkingController(
+            ParkingDbContext context,
+            IParkingCalculationService calculationService)
         {
             _context = context;
+            _calculationService = calculationService;
         }
 
         // GET: api/Parking
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ParkingTransaction>>> GetParkingTransactions()
+        public async Task<ActionResult<IEnumerable<ParkingTransactionDto>>> GetParkingTransactions()
         {
             return await _context.ParkingTransactions
-                .Include(t => t.Vehicle)
+                .Select(t => new ParkingTransactionDto
+                {
+                    Id = t.Id,
+                    VehicleId = t.VehicleId,
+                    PlateNumber = t.Vehicle!.PlateNumber,
+                    VehicleType = t.Vehicle!.VehicleType,
+                    Owner = t.Vehicle!.Owner,
+                    EntryTime = t.EntryTime,
+                    ExitTime = t.ExitTime,
+                    DurationHours = t.DurationHours,
+                    TotalAmount = t.TotalAmount,
+                    Status = t.Status
+                })
                 .ToListAsync();
         }
 
         // GET: api/Parking/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ParkingTransaction>> GetParkingTransaction(int id)
+        public async Task<ActionResult<ParkingTransactionDto>> GetParkingTransaction(int id)
         {
             var transaction = await _context.ParkingTransactions
-                .Include(t => t.Vehicle)
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .Where(t => t.Id == id)
+                .Select(t => new ParkingTransactionDto
+                {
+                    Id = t.Id,
+                    VehicleId = t.VehicleId,
+                    PlateNumber = t.Vehicle!.PlateNumber,
+                    VehicleType = t.Vehicle!.VehicleType,
+                    Owner = t.Vehicle!.Owner,
+                    EntryTime = t.EntryTime,
+                    ExitTime = t.ExitTime,
+                    DurationHours = t.DurationHours,
+                    TotalAmount = t.TotalAmount,
+                    Status = t.Status
+                })
+                .FirstOrDefaultAsync();
 
             if (transaction == null)
             {
@@ -52,6 +83,16 @@ namespace ParkingSystem.Api.Controllers
             if (!vehicleExists)
             {
                 return BadRequest("Vehicle does not exist.");
+            }
+
+            var alreadyParked = await _context.ParkingTransactions
+            .AnyAsync(t =>
+                t.VehicleId == transaction.VehicleId &&
+                t.Status == "PARKED");
+
+            if (alreadyParked)
+            {
+                return BadRequest("Vehicle is already parked.");
             }
 
             _context.ParkingTransactions.Add(transaction);
@@ -119,6 +160,63 @@ namespace ParkingSystem.Api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // PUT: api/Parking/5/exit
+        [HttpPut("{id}/exit")]
+        public async Task<ActionResult<ParkingTransactionDto>> ExitParking(int id)
+        {
+            var transaction = await _context.ParkingTransactions
+                .Include(t => t.Vehicle)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            if (transaction.Status == "COMPLETED")
+            {
+                return BadRequest("Parking transaction is already completed.");
+            }
+
+            if (DateTime.Now < transaction.EntryTime)
+            {
+                return BadRequest("Exit time cannot be earlier than entry time.");
+            }
+
+            var exitTime = DateTime.Now;
+
+            var duration = (decimal)(
+                exitTime - transaction.EntryTime
+            ).TotalHours;
+
+            var totalAmount = await _calculationService.CalculateParkingFee(
+                transaction.VehicleId,
+                duration);
+
+            transaction.ExitTime = exitTime;
+            transaction.DurationHours = Math.Round(duration, 2);
+            transaction.TotalAmount = totalAmount;
+            transaction.Status = "COMPLETED";
+
+            await _context.SaveChangesAsync();
+
+            var result = new ParkingTransactionDto
+            {
+                Id = transaction.Id,
+                VehicleId = transaction.VehicleId,
+                PlateNumber = transaction.Vehicle!.PlateNumber,
+                VehicleType = transaction.Vehicle!.VehicleType,
+                Owner = transaction.Vehicle!.Owner,
+                EntryTime = transaction.EntryTime,
+                ExitTime = transaction.ExitTime,
+                DurationHours = transaction.DurationHours,
+                TotalAmount = transaction.TotalAmount,
+                Status = transaction.Status
+            };
+
+            return Ok(result);
         }
     }
 }
