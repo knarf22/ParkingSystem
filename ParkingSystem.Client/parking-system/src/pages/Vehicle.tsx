@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "../components/Modal";
+import api from "../services/api";
 
 interface Vehicle {
     id: number;
@@ -9,6 +10,14 @@ interface Vehicle {
 }
 
 function Vehicle() {
+
+    const createVehicle = async (
+        vehicle: Omit<Vehicle, "id">
+    ) => {
+        const response = await api.post("/Vehicles", vehicle);
+        return response.data;
+    };
+
     const [vehicles, setVehicles] = useState<Vehicle[]>([
         {
             id: 1,
@@ -32,10 +41,16 @@ function Vehicle() {
     const [vehicleType, setVehicleType] = useState("");
     const [owner, setOwner] = useState("");
 
-    const handleSaveVehicle = () => {
+    const handleSaveVehicle = async () => {
         if (!plateNumber || !vehicleType || !owner) {
             return;
         }
+
+        const vehicleData = {
+            plateNumber,
+            vehicleType,
+            owner
+        };
         if (editingVehicleId != null) {
             setVehicles(
                 vehicles.map((vehicle) =>
@@ -51,13 +66,12 @@ function Vehicle() {
             );
 
         } else {
-            const newVehicle: Vehicle = {
-                id: Date.now(),
-                plateNumber,
-                vehicleType,
-                owner,
-            };
-            setVehicles([...vehicles, newVehicle])
+            const newVehicle = await createVehicle(vehicleData);
+
+            setVehicles((currentVehicles) => [
+                ...currentVehicles,
+                newVehicle
+            ]);
         }
         resetForm();
 

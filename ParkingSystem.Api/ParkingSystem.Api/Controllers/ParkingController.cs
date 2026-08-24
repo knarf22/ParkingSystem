@@ -75,19 +75,21 @@ namespace ParkingSystem.Api.Controllers
         // POST: api/Parking
         [HttpPost]
         public async Task<ActionResult<ParkingTransaction>> CreateParkingTransaction(
-            ParkingTransaction transaction)
+            ParkingTransactionRequest transaction)
         {
             var vehicleExists = await _context.Vehicles
-                .AnyAsync(v => v.Id == transaction.VehicleId);
+                .FirstOrDefaultAsync(v =>
+                v.PlateNumber == transaction.PlateNumber &&
+                v.VehicleType == transaction.VehicleType);
 
-            if (!vehicleExists)
+            if (transaction == null)
             {
                 return BadRequest("Vehicle does not exist.");
             }
 
             var alreadyParked = await _context.ParkingTransactions
             .AnyAsync(t =>
-                t.VehicleId == transaction.VehicleId &&
+                t.VehicleId == vehicleExists.Id &&
                 t.Status == "PARKED");
 
             if (alreadyParked)
@@ -95,12 +97,19 @@ namespace ParkingSystem.Api.Controllers
                 return BadRequest("Vehicle is already parked.");
             }
 
-            _context.ParkingTransactions.Add(transaction);
+            var newTrans = new ParkingTransaction
+            {
+                VehicleId = vehicleExists.Id,
+                EntryTime = DateTime.UtcNow,
+                Status = "PARKED"
+            };
+
+            _context.ParkingTransactions.Add(newTrans);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(
                 nameof(GetParkingTransaction),
-                new { id = transaction.Id },
+                new { id = newTrans.Id },
                 transaction
             );
         }
