@@ -6,19 +6,23 @@ import Dashboard from "./pages/Dashboard";
 import Parking from "./pages/Parking";
 import Vehicle from "./pages/Vehicle";
 import Rates from "./pages/Rates";
+import MainPrac from "./components/practice design/MainPrac";
 
 function App() {
     return (
         <BrowserRouter>
-            <Layout>
+            {/* <Layout> */}
+            <MainPrac>
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/parking" element={<Parking />} />
                     <Route path="/vehicles" element={<Vehicle />} />
                     <Route path="/rates" element={<Rates />} />
                 </Routes>
-            </Layout>
+            {/* </Layout> */}
+            </MainPrac>
         </BrowserRouter>
+        // <MainPrac />
     );
 }
 
