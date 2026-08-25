@@ -82,7 +82,7 @@ namespace ParkingSystem.Api.Controllers
                 v.PlateNumber == transaction.PlateNumber &&
                 v.VehicleType == transaction.VehicleType);
 
-            if (transaction == null)
+            if (vehicleExists == null)
             {
                 return BadRequest("Vehicle does not exist.");
             }
