@@ -28,7 +28,7 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
-builder.Services.AddScoped< IParkingCalculationService, ParkingCalculationService>();
+builder.Services.AddScoped< IParkingCalculationService,ParkingCalculationService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

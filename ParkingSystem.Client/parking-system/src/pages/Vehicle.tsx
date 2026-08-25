@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "../components/Modal";
 import api from "../services/api";
+import HeaderVehicle from "../components/VehicleUI/HeaderVehicle";
 
 interface Vehicle {
     id: number;
@@ -18,20 +19,7 @@ function Vehicle() {
         return response.data;
     };
 
-    const [vehicles, setVehicles] = useState<Vehicle[]>([
-        {
-            id: 1,
-            plateNumber: "ABC-1234",
-            vehicleType: "Car",
-            owner: "Juan Dela Cruz",
-        },
-        {
-            id: 2,
-            plateNumber: "XYZ-5678",
-            vehicleType: "Motorcycle",
-            owner: "Pedro Santos",
-        },
-    ]);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingVehicleId, setEditingVehicleId] = useState<number | null>(null);
@@ -109,26 +97,7 @@ function Vehicle() {
     return (
         <div>
             {/* Page Header */}
-            <div className="mb-6 flex items-center justify-between">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800">
-                        Vehicles
-                    </h2>
-
-                    <p className="mt-1 text-gray-500">
-                        Manage registered vehicles.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={() => setIsModalOpen(true)}
-                    className="rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
-                >
-                    + Add Vehicle
-                </button>
-            </div>
-
+            <HeaderVehicle setIsModal={setIsModalOpen} />
             {/* Vehicles Table */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 <table className="w-full text-left">
