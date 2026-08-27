@@ -153,23 +153,7 @@ namespace ParkingSystem.Api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Parking/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteParkingTransaction(int id)
-        {
-            var transaction = await _context.ParkingTransactions
-                .FindAsync(id);
-
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            _context.ParkingTransactions.Remove(transaction);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
+       
 
         // PUT: api/Parking/5/exit
         [HttpPut("{id}/exit")]
