@@ -17,11 +17,6 @@ namespace ParkingSystem.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Vehicle>()
-                .HasMany(v => v.ParkingTransactions)
-                .WithOne(t => t.Vehicle)
-                .HasForeignKey(t => t.VehicleId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ParkingRate>()
                 .Property(p => p.FixedRate)

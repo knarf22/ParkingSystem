@@ -76,24 +76,32 @@ namespace ParkingSystem.Api.Controllers
             ParkingTransactionRequest transaction)
         {
 
+            var vehicle = await _context.Vehicles.
+                FirstOrDefaultAsync(t => t.PlateNumber == transaction.PlateNumber);
 
-            var alreadyParked = await _context.ParkingTransactions
-            .AnyAsync(t =>
-                t.Status == "PARKED");
-
-            if (alreadyParked)
+            if (vehicle == null)
             {
-                return BadRequest("Vehicle is already parked.");
+                vehicle = new Vehicle
+                {
+                    PlateNumber = transaction.PlateNumber,
+                    VehicleType = transaction.VehicleType
+
+                };
+
+                _context.Vehicles.Add(vehicle);
+                await _context.SaveChangesAsync();
             }
 
             var newTrans = new ParkingTransaction
             {
                 EntryTime = DateTime.UtcNow,
-                Status = "PARKED"
+                Status = "PARKED",
+                VehicleId = vehicle.Id
             };
 
+
             _context.ParkingTransactions.Add(newTrans);
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
             return CreatedAtAction(
                 nameof(GetParkingTransaction),
