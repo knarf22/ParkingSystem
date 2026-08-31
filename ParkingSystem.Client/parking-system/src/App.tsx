@@ -11,16 +11,15 @@ import MainPrac from "./components/practice design/MainPrac";
 function App() {
     return (
         <BrowserRouter>
-            {/* <Layout> */}
-            <MainPrac>
+            <Layout>
+            {/* <MainPrac> */}
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/parking" element={<Parking />} />
-                    <Route path="/vehicles" element={<Vehicle />} />
                     <Route path="/rates" element={<Rates />} />
                 </Routes>
-            {/* </Layout> */}
-            </MainPrac>
+            </Layout>
+            {/* </MainPrac> */}
         </BrowserRouter>
         // <MainPrac />
     );

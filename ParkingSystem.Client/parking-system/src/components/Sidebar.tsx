@@ -30,20 +30,6 @@ function Sidebar() {
                 >
                     Parking
                 </NavLink>
-
-                <NavLink
-                    to="/vehicles"
-                    className={({ isActive }) =>
-                        `block px-4 py-3 rounded-lg ${
-                            isActive
-                                ? "bg-blue-600 text-white"
-                                : "text-gray-300 hover:bg-gray-800"
-                        }`
-                    }
-                >
-                    Vehicles
-                </NavLink>
-
                 <NavLink
                     to="/rates"
                     className={({ isActive }) =>
