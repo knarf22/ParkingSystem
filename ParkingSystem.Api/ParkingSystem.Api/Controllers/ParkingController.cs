@@ -33,7 +33,6 @@ namespace ParkingSystem.Api.Controllers
                     VehicleId = t.VehicleId,
                     PlateNumber = t.Vehicle!.PlateNumber,
                     VehicleType = t.Vehicle!.VehicleType,
-                    Owner = t.Vehicle!.Owner,
                     EntryTime = t.EntryTime,
                     ExitTime = t.ExitTime,
                     DurationHours = t.DurationHours,
@@ -55,7 +54,6 @@ namespace ParkingSystem.Api.Controllers
                     VehicleId = t.VehicleId,
                     PlateNumber = t.Vehicle!.PlateNumber,
                     VehicleType = t.Vehicle!.VehicleType,
-                    Owner = t.Vehicle!.Owner,
                     EntryTime = t.EntryTime,
                     ExitTime = t.ExitTime,
                     DurationHours = t.DurationHours,
@@ -77,19 +75,10 @@ namespace ParkingSystem.Api.Controllers
         public async Task<ActionResult<ParkingTransaction>> CreateParkingTransaction(
             ParkingTransactionRequest transaction)
         {
-            var vehicleExists = await _context.Vehicles
-                .FirstOrDefaultAsync(v =>
-                v.PlateNumber == transaction.PlateNumber &&
-                v.VehicleType == transaction.VehicleType);
 
-            if (vehicleExists == null)
-            {
-                return BadRequest("Vehicle does not exist.");
-            }
 
             var alreadyParked = await _context.ParkingTransactions
             .AnyAsync(t =>
-                t.VehicleId == vehicleExists.Id &&
                 t.Status == "PARKED");
 
             if (alreadyParked)
@@ -99,7 +88,6 @@ namespace ParkingSystem.Api.Controllers
 
             var newTrans = new ParkingTransaction
             {
-                VehicleId = vehicleExists.Id,
                 EntryTime = DateTime.UtcNow,
                 Status = "PARKED"
             };
@@ -201,7 +189,6 @@ namespace ParkingSystem.Api.Controllers
                 VehicleId = transaction.VehicleId,
                 PlateNumber = transaction.Vehicle!.PlateNumber,
                 VehicleType = transaction.Vehicle!.VehicleType,
-                Owner = transaction.Vehicle!.Owner,
                 EntryTime = transaction.EntryTime,
                 ExitTime = transaction.ExitTime,
                 DurationHours = transaction.DurationHours,

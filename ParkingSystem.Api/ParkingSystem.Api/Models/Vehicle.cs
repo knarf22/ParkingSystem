@@ -8,8 +8,6 @@
 
         public string VehicleType { get; set; } = string.Empty;
 
-        public string Owner { get; set; } = string.Empty;
-
         public ICollection<ParkingTransaction> ParkingTransactions { get; set; }
             = new List<ParkingTransaction>();
     }
