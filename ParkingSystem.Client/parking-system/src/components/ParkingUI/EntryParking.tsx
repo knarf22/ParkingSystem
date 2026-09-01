@@ -3,9 +3,21 @@ import api from "../../services/api";
 
 const EntryParking = () => {
 
+    const getCurrentDateTime = () => {
+        const now = new Date();
+
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
     const [plateNumber, setPlateNumber] = useState("");
     const [vehicleType, setVehicleType] = useState("");
-    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedDate, setSelectedDate] = useState(getCurrentDateTime());
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -27,7 +39,7 @@ const EntryParking = () => {
                 {
                     plateNumber: plateNumber.trim(),
                     vehicleType: vehicleType,
-                    entryTime : selectedDate
+                    entryTime: selectedDate
                 })
             console.log(res.data)
             setPlateNumber("");
@@ -45,7 +57,6 @@ const EntryParking = () => {
 
     return (
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            {JSON.stringify(selectedDate)}
             <h3 className="text-lg font-semibold text-gray-800">
                 Parking Entry
             </h3>
@@ -99,6 +110,7 @@ const EntryParking = () => {
                             id="entry-time"
                             className="w-full rounded-lg  border-gray-300 ps-9 pe-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand px-3 py-2.5"
                             placeholder="Select date"
+                            value={selectedDate}
                             onChange={(e) => {
                                 setSelectedDate(e.target.value)
                                 e.target.blur()
