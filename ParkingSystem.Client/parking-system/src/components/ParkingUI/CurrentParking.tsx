@@ -1,11 +1,11 @@
 import type { ParkingTransaction } from '../../types/parking';
 
 interface CurrentParking {
-    loading : boolean;
-    transactions : ParkingTransaction[]
+    loading: boolean;
+    transactions: ParkingTransaction[]
 }
 
-const CurrentParking = ({loading , transactions} : CurrentParking) => {
+const CurrentParking = ({ loading, transactions }: CurrentParking) => {
     return (
         <div className="mt-8">
             <h3 className="text-lg font-semibold text-gray-800">
@@ -41,6 +41,9 @@ const CurrentParking = ({loading , transactions} : CurrentParking) => {
                                 <th className="px-6 py-4 text-sm font-semibold text-gray-600">
                                     Status
                                 </th>
+                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
+                                    Action
+                                </th>
                             </tr>
                         </thead>
 
@@ -70,12 +73,17 @@ const CurrentParking = ({loading , transactions} : CurrentParking) => {
                                     <td className="px-6 py-4">
                                         <span
                                             className={`rounded-full px-3 py-1 text-xs font-medium ${transaction.status === "PARKED"
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-gray-100 text-gray-700"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-gray-100 text-gray-700"
                                                 }`}
                                         >
                                             {transaction.status}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <button className='ml-4 cursor-pointer bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full'>
+                                            Exit
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
