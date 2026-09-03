@@ -21,6 +21,19 @@ function Parking() {
         }
     };
 
+    const exitParkingTransaction = async (exitParkingId: number) => {
+        try {
+            const response = await api.put(`/Parking/${exitParkingId}/exit`);
+            await loadTransactions(); // ← ITO ang nagre-fetch
+
+            return response.data;
+        } catch (error) {
+            console.error("Failed to load parking transactions:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         loadTransactions();
     }, []);
@@ -34,7 +47,7 @@ function Parking() {
             <EntryParking />
 
             {/* Current Parking */}
-            <CurrentParking loading={loading} transactions={transactions} />
+            <CurrentParking exitParking={exitParkingTransaction} loading={loading} transactions={transactions} />
 
         </div>
     );

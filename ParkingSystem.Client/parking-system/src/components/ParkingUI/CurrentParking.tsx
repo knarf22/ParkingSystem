@@ -3,9 +3,10 @@ import type { ParkingTransaction } from '../../types/parking';
 interface CurrentParking {
     loading: boolean;
     transactions: ParkingTransaction[]
+    exitParking: (id: number) => void;
 }
 
-const CurrentParking = ({ loading, transactions }: CurrentParking) => {
+const CurrentParking = ({ loading, transactions, exitParking }: CurrentParking) => {
     return (
         <div className="mt-8">
             <h3 className="text-lg font-semibold text-gray-800">
@@ -81,7 +82,9 @@ const CurrentParking = ({ loading, transactions }: CurrentParking) => {
                                         </span>
                                     </td>
                                     <td>
-                                        <button className='ml-4 cursor-pointer bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full'>
+                                        <button 
+                                        onClick={() => exitParking(transaction.id)}
+                                        className='ml-4 cursor-pointer bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full'>
                                             Exit
                                         </button>
                                     </td>
