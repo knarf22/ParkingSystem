@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { CreateParkingRates, ParkingRates } from "../types/parking";
 import api from "../services/api";
-import IsModal from "../components/ParkingRates/IsModal";
+import ParkingRateForm from "../components/ParkingRates/IsModal";
+import Modal from "../components/Modal";
 
 function Rates() {
 
@@ -150,13 +151,19 @@ function Rates() {
             </div>
 
             {/* MODAL */}
-            <IsModal
-                isModalOpen={isModalOpen}
-                formData={formData}
-                setIsModalOpen={setIsModalOpen}
-                setFormData={setFormData}
-                addRate={addRate}
-            />
+            <Modal
+                isOpen={isModalOpen}
+                title="Add Parking Rate"
+                onClose={() => setIsModalOpen(false)}
+            >
+                <ParkingRateForm
+                    formData={formData}
+                    setIsModalOpen={setIsModalOpen}
+                    setFormData={setFormData}
+                    addRate={addRate}
+                />
+            </Modal>
+
 
         </div>
     );

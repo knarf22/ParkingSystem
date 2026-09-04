@@ -30,7 +30,6 @@ export interface CreateParkingRates {
 }
 
 export interface IsModalProps {
-    isModalOpen: boolean
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     formData: CreateParkingRates
     setFormData: React.Dispatch<React.SetStateAction<CreateParkingRates>>
