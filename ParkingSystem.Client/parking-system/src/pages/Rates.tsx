@@ -1,4 +1,62 @@
+import { useEffect, useState } from "react";
+import type { CreateParkingRates, ParkingRates } from "../types/parking";
+import api from "../services/api";
+import IsModal from "../components/ParkingRates/IsModal";
+
 function Rates() {
+
+    const [rates, setRates] = useState<ParkingRates[]>([])
+    const [loading, setLoading] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [formData, setFormData] = useState<CreateParkingRates>({
+        vehicleType: "",
+        fixedHours: "",
+        fixedRate: "",
+        exceedingRate: "",
+    });
+
+    const getAllRates = async () => {
+        setLoading(true)
+
+        try {
+            const res = await api.get<ParkingRates[]>('/ParkingRates');
+            setRates(res.data)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const addRate = async () => {
+        try {
+            await api.post<CreateParkingRates>('/ParkingRates', formData)
+
+            setIsModalOpen(false)
+
+            setFormData({
+                vehicleType: "",
+                fixedHours: 0,
+                fixedRate: 0,
+                exceedingRate: 0,
+            })
+            await getAllRates();
+
+            console.log("done")
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+
+        }
+    }
+
+
+    useEffect(() => {
+        getAllRates();
+    }, [])
+
     return (
         <div>
             {/* Page Header */}
@@ -15,7 +73,8 @@ function Rates() {
 
                 <button
                     type="button"
-                    className="rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
+                    className="cursor-pointer rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
+                    onClick={() => setIsModalOpen(true)}
                 >
                     + Add Rate
                 </button>
@@ -49,116 +108,56 @@ function Rates() {
                     </thead>
 
                     <tbody>
-                        <tr className="border-t border-gray-100">
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                Car
-                            </td>
+                        {rates.map((i) => (
+                            <tr key={i.id} className="border-t border-gray-100">
+                                <td className="px-6 py-4 text-sm text-gray-700">
+                                    {i.vehicleType}
+                                </td>
 
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                3 hours
-                            </td>
+                                <td className="px-6 py-4 text-sm text-gray-700">
+                                    {i.fixedHours}
+                                </td>
 
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                ₱50.00
-                            </td>
+                                <td className="px-6 py-4 text-sm text-gray-700">
+                                    ₱{i.fixedRate.toFixed(2)}
+                                </td>
 
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                ₱20.00 / hour
-                            </td>
+                                <td className="px-6 py-4 text-sm text-gray-700">
+                                    ₱{i.exceedingRate.toFixed(2)} / hour
+                                </td>
 
-                            <td className="px-6 py-4">
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100"
-                                    >
-                                        Edit
-                                    </button>
+                                <td className="px-6 py-4">
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100"
+                                        >
+                                            Edit
+                                        </button>
 
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr className="border-t border-gray-100">
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                Motorcycle
-                            </td>
-
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                3 hours
-                            </td>
-
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                ₱30.00
-                            </td>
-
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                ₱10.00 / hour
-                            </td>
-
-                            <td className="px-6 py-4">
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr className="border-t border-gray-100">
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                Van
-                            </td>
-
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                3 hours
-                            </td>
-
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                ₱70.00
-                            </td>
-
-                            <td className="px-6 py-4 text-sm text-gray-700">
-                                ₱30.00 / hour
-                            </td>
-
-                            <td className="px-6 py-4">
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                        <button
+                                            type="button"
+                                            className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
+
+            {/* MODAL */}
+            <IsModal
+                isModalOpen={isModalOpen}
+                formData={formData}
+                setIsModalOpen={setIsModalOpen}
+                setFormData={setFormData}
+                addRate={addRate}
+            />
+
         </div>
     );
 }
