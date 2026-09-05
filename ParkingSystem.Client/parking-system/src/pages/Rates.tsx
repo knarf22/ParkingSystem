@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { CreateParkingRates, ParkingRates } from "../types/parking";
 import api from "../services/api";
-import ParkingRateForm from "../components/ParkingRates/IsModal";
+import ParkingRateForm from "../components/ParkingRates/ParkingRateForm";
 import Modal from "../components/Modal";
 
 function Rates() {
@@ -163,7 +163,6 @@ function Rates() {
                     addRate={addRate}
                 />
             </Modal>
-
 
         </div>
     );
