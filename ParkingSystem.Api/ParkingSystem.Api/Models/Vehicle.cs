@@ -8,5 +8,9 @@
 
         public string VehicleType { get; set; } = string.Empty;
 
+        public int? ParkingClassId { get; set; }
+
+        public ParkingClass? ParkingClass { get; set; }
+
     }
 }

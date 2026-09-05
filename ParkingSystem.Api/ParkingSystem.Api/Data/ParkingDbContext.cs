@@ -14,6 +14,7 @@ namespace ParkingSystem.Api.Data
         public DbSet<ParkingRate> ParkingRates => Set<ParkingRate>();
 
         public DbSet<ParkingTransaction> ParkingTransactions => Set<ParkingTransaction>();
+        public DbSet<ParkingClass> ParkingClasses => Set<ParkingClass>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +30,34 @@ namespace ParkingSystem.Api.Data
             modelBuilder.Entity<ParkingTransaction>()
                 .Property(p => p.DurationHours)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Vehicle>()
+                .HasOne(v => v.ParkingClass)
+                .WithMany()
+                .HasForeignKey(v => v.ParkingClassId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ParkingClass>().HasData(
+                new ParkingClass
+                {
+                    Id = 1,
+                    ClassName = "Class 1",
+                    Capacity = 50
+                },
+                new ParkingClass
+                {
+                    Id = 2,
+                    ClassName = "Class 2",
+                    Capacity = 10
+                },
+                new ParkingClass
+                {
+                    Id = 3,
+                    ClassName = "Class 3",
+                    Capacity = 30
+                }
+            );
         }
+
     }
 }
