@@ -206,5 +206,30 @@ namespace ParkingSystem.Api.Controllers
 
             return Ok(result);
         }
+
+        // GET: api/Parking/availability
+        [HttpGet("availability")]
+        public async Task<ActionResult<IEnumerable<ParkingAvailabilityDto>>> GetParkingAvailability()
+        {
+            var availability = await _context.ParkingClasses
+                .Select(pc => new ParkingAvailabilityDto
+                {
+                    ParkingClassId = pc.Id,
+                    ClassName = pc.ClassName,
+                    Capacity = pc.Capacity,
+
+                    Occupied = _context.ParkingTransactions
+                        .Count(v => 
+                        v.Status == "PARKED" &&
+                        v.Vehicle.ParkingClassId == pc.Id),
+
+                    Available = pc.Capacity - _context.ParkingTransactions
+                        .Count(v =>
+                        v.Status == "PARKED" &&
+                        v.Vehicle.ParkingClassId == pc.Id)
+                })
+                .ToListAsync();
+            return Ok(availability);
+        }
     }
 }
