@@ -1,77 +1,49 @@
+import ParkingAvailabilityCard from "./Dashboard/ParkingAvailabilityCard"
 
 
 const ParkingCard = () => {
     return (
         <>
             <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-800">
-                    Current Parking
-                </h3>
+                <div className="mb-4">
+                    <h3 className="text-xl font-bold text-gray-800">
+                        Parking Availability
+                    </h3>
 
-                <div className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm border border-gray-200">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Plate Number
-                                </th>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Current occupancy by parking class.
+                    </p>
+                </div>
 
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Vehicle
-                                </th>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
 
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Entry Time
-                                </th>
+                    <ParkingAvailabilityCard
+                        className="Class 1"
+                        vehicleTypes="Car / Van / SUV"
+                        capacity={50}
+                        occupied={32}
+                        available={18}
+                        progressColor="bg-blue-500"
+                    />
 
-                                <th className="px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Status
-                                </th>
-                            </tr>
-                        </thead>
+                    <ParkingAvailabilityCard
+                        className="Class 2"
+                        vehicleTypes="Truck"
+                        capacity={10}
+                        occupied={4}
+                        available={6}
+                        progressColor="bg-orange-500"
+                    />
 
-                        <tbody>
-                            <tr className="border-t border-gray-100">
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    ABC-1234
-                                </td>
+                    <ParkingAvailabilityCard
+                        className="Class 3"
+                        vehicleTypes="Motorcycle / E-bike"
+                        capacity={30}
+                        occupied={21}
+                        available={9}
+                        progressColor="bg-purple-500"
+                    />
 
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    Car
-                                </td>
-
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    08:00 AM
-                                </td>
-
-                                <td className="px-6 py-4">
-                                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                                        PARKED
-                                    </span>
-                                </td>
-                            </tr>
-
-                            <tr className="border-t border-gray-100">
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    XYZ-5678
-                                </td>
-
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    Motorcycle
-                                </td>
-
-                                <td className="px-6 py-4 text-sm text-gray-700">
-                                    08:30 AM
-                                </td>
-
-                                <td className="px-6 py-4">
-                                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                                        PARKED
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </>
