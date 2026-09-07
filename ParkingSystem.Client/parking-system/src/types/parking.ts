@@ -15,7 +15,7 @@ export interface ParkingTransaction {
 
 
 export interface ParkingRates {
-    id : number;
+    id: number;
     vehicleType: string;
     fixedHours: number;
     fixedRate: number;
@@ -29,9 +29,21 @@ export interface CreateParkingRates {
     exceedingRate: number | "";
 }
 
-export interface IsModalProps {
+
+export interface ParkingRateFormProps {
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     formData: CreateParkingRates
     setFormData: React.Dispatch<React.SetStateAction<CreateParkingRates>>
-    addRate : () => void
+    addRate: () => void
 }
+
+
+export interface AvailableParking {
+
+    parkingClassId: number
+    available: number
+    capacity: number
+    className: string
+    occupied: number
+}
+
