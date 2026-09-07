@@ -44,7 +44,7 @@ function Parking() {
             <HeaderParking />
 
             {/* Parking Entry */}
-            <EntryParking />
+            <EntryParking onSuccess={loadTransactions}/>
 
             {/* Current Parking */}
             <CurrentParking exitParking={exitParkingTransaction} loading={loading} transactions={transactions} />

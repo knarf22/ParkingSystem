@@ -70,6 +70,20 @@ namespace ParkingSystem.Api.Controllers
             return transaction;
         }
 
+        private int GetParkingClassId(string vehicleType)
+        {
+            return vehicleType switch
+            {
+                "Car" => 1,
+                "Van" => 1,
+                "SUV" => 1,
+                "Truck" => 2,
+                "Motorcycle" => 3,
+                "E-bike" => 3,
+                _ => throw new ArgumentException("Invalid vehicle type")
+            };
+        }
+
         // POST: api/Parking
         [HttpPost]
         public async Task<ActionResult<ParkingTransaction>> CreateParkingTransaction(
@@ -81,10 +95,13 @@ namespace ParkingSystem.Api.Controllers
 
             if (vehicle == null)
             {
+                var parkingClassId = GetParkingClassId(transaction.VehicleType);
+
                 vehicle = new Vehicle
                 {
                     PlateNumber = transaction.PlateNumber,
-                    VehicleType = transaction.VehicleType
+                    VehicleType = transaction.VehicleType,
+                    ParkingClassId = parkingClassId
 
                 };
 

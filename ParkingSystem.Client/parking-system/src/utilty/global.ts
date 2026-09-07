@@ -30,3 +30,12 @@ export const GetProgressColor = (classType: string) => {
             return "bg-gray-500";
     }
 };
+
+export const GetVehicleTypesForSelect = () => {
+    return [
+        "Car",
+        "Motorcycle",
+        "Van",
+        "Truck"
+    ];
+};
