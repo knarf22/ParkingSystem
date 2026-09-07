@@ -1,7 +1,39 @@
+import { useEffect, useState } from "react";
 import ParkingCard from "../components/ParkingCard";
 import StatCard from "../components/StatCard";
+import api from "../services/api";
+import type { ParkingTransaction } from "../types/parking";
 
 function Dashboard() {
+    const [transactions, setTransactions] = useState<ParkingTransaction[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const loadTransactions = async () => {
+        try {
+            const response = await api.get<ParkingTransaction[]>("/Parking");
+
+            setTransactions(response.data);
+        } catch (error) {
+            console.error("Failed to load parking transactions:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const todayRevenue = transactions
+        .filter(t => {
+            const today = new Date().toDateString();
+            return (
+                t.status === "COMPLETED" &&
+                new Date(t.exitTime!).toDateString() === today
+            );
+        })
+        .reduce((total, t) => total + (t.totalAmount ?? 0), 0);
+
+
+    useEffect(() => {
+        loadTransactions();
+    }, []);
     return (
         <div>
             {/* Page Header */}
@@ -29,7 +61,7 @@ function Dashboard() {
 
                 <StatCard
                     title="Today's Revenue"
-                    value="₱4,850.00"
+                    value={`₱${todayRevenue.toFixed(2)}`}
                 />
             </div>
             <div>

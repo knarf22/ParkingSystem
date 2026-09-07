@@ -42,6 +42,8 @@ function Modal({
                 </div>
 
             </div>
+
+            
         </div>
     );
 }
