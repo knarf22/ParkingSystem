@@ -6,9 +6,9 @@ const ParkingCard = () => {
         <>
             <div className="mt-8">
                 <div className="mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">
+                    {/* <h3 className="text-xl font-bold text-gray-800">
                         Parking Availability
-                    </h3>
+                    </h3> */}
 
                     <p className="mt-1 text-sm text-gray-500">
                         Current occupancy by parking class.
