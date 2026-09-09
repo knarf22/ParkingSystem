@@ -12,8 +12,6 @@ export interface ParkingTransaction {
     status: "PARKED" | "COMPLETED";
 }
 
-
-
 export interface ParkingRates {
     id: number;
     vehicleType: string;
@@ -39,7 +37,6 @@ export interface ParkingRateFormProps {
 
 
 export interface AvailableParking {
-
     parkingClassId: number
     available: number
     capacity: number
