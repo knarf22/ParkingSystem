@@ -13,7 +13,7 @@ const CurrentParking = ({ loading, transactions, exitParking }: CurrentParking) 
                 Current Parking
             </h3>
 
-            <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="mt-4 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
 
                 {loading ? (
                     <div className="p-6 text-gray-500">
@@ -82,9 +82,9 @@ const CurrentParking = ({ loading, transactions, exitParking }: CurrentParking) 
                                         </span>
                                     </td>
                                     <td>
-                                        <button 
-                                        onClick={() => exitParking(transaction.id)}
-                                        className='ml-4 cursor-pointer bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full'>
+                                        <button
+                                            onClick={() => exitParking(transaction.id)}
+                                            className='ml-4 cursor-pointer bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full'>
                                             Exit
                                         </button>
                                     </td>

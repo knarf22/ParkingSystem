@@ -6,6 +6,7 @@ import HeaderParking from "../components/ParkingUI/HeaderParking";
 import EntryParking from "../components/ParkingUI/EntryParking";
 
 function Parking() {
+    const [search, setSearch] = useState("");
     const [transactions, setTransactions] = useState<ParkingTransaction[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -34,20 +35,38 @@ function Parking() {
         }
     }
 
+    const filteredTransactions = transactions.filter(transaction =>
+        transaction.plateNumber.toLowerCase().includes(search.toLowerCase()) ||
+        transaction.vehicleType.toLowerCase().includes(search.toLowerCase())
+    );
+
     useEffect(() => {
         loadTransactions();
     }, []);
 
     return (
-        <div>
+        <div className="min-h-screen overflow-y-auto [scrollbar-gutter:stable]">
             {/* Page Header */}
             <HeaderParking />
 
             {/* Parking Entry */}
-            <EntryParking onSuccess={loadTransactions}/>
+            <EntryParking onSuccess={loadTransactions} />
+
+            <div className="mt-6">
+                <input
+                    type="text"
+                    placeholder="Search plate number..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2
+                   text-sm outline-none
+                   focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+                   md:w-80"
+                />
+            </div>
 
             {/* Current Parking */}
-            <CurrentParking exitParking={exitParkingTransaction} loading={loading} transactions={transactions} />
+            <CurrentParking exitParking={exitParkingTransaction} loading={loading} transactions={filteredTransactions} />
 
         </div>
     );
