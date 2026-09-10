@@ -111,7 +111,7 @@ namespace ParkingSystem.Api.Controllers
 
             var newTrans = new ParkingTransaction
             {
-                EntryTime = DateTime.UtcNow,
+                EntryTime = DateTime.Now,
                 Status = "PARKED",
                 VehicleId = vehicle.Id
             };
@@ -247,6 +247,33 @@ namespace ParkingSystem.Api.Controllers
                 })
                 .ToListAsync();
             return Ok(availability);
+        }
+
+        [HttpGet("dashboard")]
+
+        // GET: api/Parking/dashboard
+        public ActionResult<ParkingDashboardDto> GetParkingDashboard()
+        {
+            var totalOccupied = _context.ParkingTransactions
+                .Count(t => t.Status == "PARKED");
+
+            var totalCapacity = _context.ParkingClasses
+                .Sum(pc => pc.Capacity);
+
+            var totalAvailable = totalCapacity - totalOccupied;
+
+            var totalRevenue = _context.ParkingTransactions
+                .Where(t => t.Status == "COMPLETED")
+                .Sum(t => t.TotalAmount) ?? 0;
+
+            var dashboard = new ParkingDashboardDto
+            {
+                TotalOccupied = totalOccupied,
+                TotalAvailable = totalAvailable,
+                TotalRevenue = totalRevenue
+            };
+
+            return Ok(dashboard);
         }
     }
 }

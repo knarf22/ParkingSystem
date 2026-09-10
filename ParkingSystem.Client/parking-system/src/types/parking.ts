@@ -44,3 +44,9 @@ export interface AvailableParking {
     occupied: number
 }
 
+
+export interface Dashboard {
+  totalOccupied: number
+  totalAvailable: number
+  totalRevenue: number
+}

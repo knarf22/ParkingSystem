@@ -51,7 +51,7 @@ const EntryParking = ({ onSuccess }: EntryParkingProps) => {
 
             setPlateNumber("");
             setVehicleType("");
-            setSelectedDate("");
+            setSelectedDate(getCurrentDateTime());
         } catch (error: any) {
             setError(error.response.data || "failed to park")
         } finally {

@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import ParkingCard from "../components/ParkingCard";
 import StatCard from "../components/StatCard";
 import api from "../services/api";
-import type { ParkingTransaction } from "../types/parking";
+import type { Dashboard } from "../types/parking";
 
 function Dashboard() {
-    const [transactions, setTransactions] = useState<ParkingTransaction[]>([]);
+    const [transactions, setTransactions] = useState<Dashboard | null>(null);
     const [loading, setLoading] = useState(true);
 
     const loadTransactions = async () => {
         try {
-            const response = await api.get<ParkingTransaction[]>("/Parking");
+            const response = await api.get<Dashboard>("/Parking/dashboard");
 
             setTransactions(response.data);
         } catch (error) {
@@ -20,15 +20,7 @@ function Dashboard() {
         }
     };
 
-    const todayRevenue = transactions
-        .filter(t => {
-            const today = new Date().toDateString();
-            return (
-                t.status === "COMPLETED" &&
-                new Date(t.exitTime!).toDateString() === today
-            );
-        })
-        .reduce((total, t) => total + (t.totalAmount ?? 0), 0);
+
 
 
     useEffect(() => {
@@ -51,17 +43,17 @@ function Dashboard() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <StatCard
                     title="Occupied Slots"
-                    value="32"
+                    value={`${transactions?.totalOccupied.toFixed() ?? "0"}`}
                 />
 
                 <StatCard
                     title="Available Slots"
-                    value="18"
+                    value={`${transactions?.totalAvailable.toFixed() ?? "0"}`}
                 />
 
                 <StatCard
                     title="Today's Revenue"
-                    value={`₱${todayRevenue.toFixed(2)}`}
+                    value={`₱${transactions?.totalRevenue.toFixed(2) ?? "0"} `}
                 />
             </div>
             <div>
