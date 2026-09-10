@@ -4,6 +4,7 @@ import type { ParkingTransaction } from "../types/parking";
 import CurrentParking from "../components/ParkingUI/CurrentParking";
 import HeaderParking from "../components/ParkingUI/HeaderParking";
 import EntryParking from "../components/ParkingUI/EntryParking";
+import { Search, X } from "lucide-react";
 
 function Parking() {
     const [search, setSearch] = useState("");
@@ -52,17 +53,32 @@ function Parking() {
             {/* Parking Entry */}
             <EntryParking onSuccess={loadTransactions} />
 
-            <div className="mt-6">
+            <div className="relative mt-6 w-full md:w-96">
+                <Search
+                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                />
+
                 <input
                     type="text"
-                    placeholder="Search plate number..."
+                    placeholder="Search plate or vehicle type..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2
-                   text-sm outline-none
-                   focus:border-blue-500 focus:ring-2 focus:ring-blue-100
-                   md:w-80"
+                    className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-10
+                   text-sm text-gray-700 outline-none
+                   placeholder:text-gray-400
+                   focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
+
+                {search && (
+                    <button
+                        type="button"
+                        onClick={() => setSearch("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2
+                       text-gray-400 hover:text-gray-600"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                )}
             </div>
 
             {/* Current Parking */}
