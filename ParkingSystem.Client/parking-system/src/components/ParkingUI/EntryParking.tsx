@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 import api from "../../services/api";
 import { GetVehicleTypesForSelect } from "../../utilty/global";
 
 interface EntryParkingProps {
-    onSuccess: () => void;
+    onSuccess: () => void | Promise<void>;
+    setProcessing: (value: boolean) => void;
 }
 
-const EntryParking = ({ onSuccess }: EntryParkingProps) => {
-
+const EntryParking = ({ onSuccess, setProcessing }: EntryParkingProps) => {
     const getCurrentDateTime = () => {
         const now = new Date();
 
@@ -22,45 +23,56 @@ const EntryParking = ({ onSuccess }: EntryParkingProps) => {
 
     const [plateNumber, setPlateNumber] = useState("");
     const [vehicleType, setVehicleType] = useState("");
-    const [selectedDate, setSelectedDate] = useState(getCurrentDateTime());
+    const [selectedDate, setSelectedDate] = useState(
+        getCurrentDateTime()
+    );
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const handleParkVehicle = async () => {
         setError("");
+
         if (!plateNumber.trim()) {
             setError("Enter plate number");
-            return
+            return;
         }
+
         if (!vehicleType) {
             setError("Choose vehicle type");
-            return
+            return;
         }
 
         try {
-            setLoading(true)
+            setLoading(true);
+            setProcessing(true);
 
-            const res = await api.post("/Parking",
-                {
-                    plateNumber: plateNumber.trim(),
-                    vehicleType: vehicleType,
-                    entryTime: selectedDate
-                })
-            console.log(res.data)
+            await api.post("/Parking", {
+                plateNumber: plateNumber.trim(),
+                vehicleType: vehicleType,
+                entryTime: selectedDate,
+            });
+
             await onSuccess();
+
+            // Artificial delay para makita ang loading state
+            await new Promise((resolve) => setTimeout(resolve, 2000));
 
             setPlateNumber("");
             setVehicleType("");
             setSelectedDate(getCurrentDateTime());
+
         } catch (error: any) {
-            setError(error.response.data || "failed to park")
+            setError(
+                error?.response?.data?.message ||
+                error?.response?.data ||
+                "Failed to park vehicle"
+            );
         } finally {
             setLoading(false);
+            setProcessing(false);
         }
-    }
-    if (error) {
-        console.log("error", error)
-    }
+    };
 
     return (
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -69,7 +81,6 @@ const EntryParking = ({ onSuccess }: EntryParkingProps) => {
             </h3>
 
             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-
                 {/* Plate Number */}
                 <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -78,10 +89,15 @@ const EntryParking = ({ onSuccess }: EntryParkingProps) => {
 
                     <input
                         value={plateNumber}
-                        onChange={(e) => setPlateNumber(e.target.value)}
+                        onChange={(e) =>
+                            setPlateNumber(e.target.value)
+                        }
                         type="text"
                         placeholder="Enter plate number"
-                        className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        disabled={loading}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none
+                                   focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+                                   disabled:cursor-not-allowed disabled:bg-gray-100"
                     />
                 </div>
 
@@ -90,59 +106,101 @@ const EntryParking = ({ onSuccess }: EntryParkingProps) => {
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                         Vehicle Type
                     </label>
+
                     <select
                         value={vehicleType}
-                        onChange={(e) => setVehicleType(e.target.value)}
-
-                        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        onChange={(e) =>
+                            setVehicleType(e.target.value)
+                        }
+                        disabled={loading}
+                        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none
+                                   focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+                                   disabled:cursor-not-allowed disabled:bg-gray-100"
                     >
-                        <option value="">Select vehicle type</option>
-                        {GetVehicleTypesForSelect().map(i => (
-                            <option key={i}>{i}</option>
+                        <option value="">
+                            Select vehicle type
+                        </option>
+
+                        {GetVehicleTypesForSelect().map((item) => (
+                            <option key={item} value={item}>
+                                {item}
+                            </option>
                         ))}
-                        {/* <option value="Car">Car</option>
-                        <option value="Motorcycle">Motorcycle</option>
-                        <option value="Van">Van</option> */}
                     </select>
                 </div>
+
+                {/* Select Date */}
                 <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                         Select Date
                     </label>
-                    <div className="relative max-w-sm">
-                        <div className="absolute inset-y-0 inset-s-0 flex items-center ps-3 pointer-events-none">
-                            <svg className="w-4 h-4 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" /></svg>
-                        </div>
-                        <input
 
-                            // type="date"
-                            // id="default-datepicker"
+                    <div className="relative max-w-sm">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <svg
+                                className="h-4 w-4 text-gray-500"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"
+                                />
+                            </svg>
+                        </div>
+
+                        <input
                             type="datetime-local"
                             id="entry-time"
-                            className="w-full rounded-lg  border-gray-300 ps-9 pe-3 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand px-3 py-2.5"
-                            placeholder="Select date"
                             value={selectedDate}
+                            disabled={loading}
                             onChange={(e) => {
-                                setSelectedDate(e.target.value)
-                                e.target.blur()
+                                setSelectedDate(e.target.value);
+                                e.target.blur();
                             }}
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pl-9 text-sm
+                                       text-gray-700 outline-none
+                                       focus:border-blue-500 focus:ring-2 focus:ring-blue-100
+                                       disabled:cursor-not-allowed disabled:bg-gray-100"
                         />
                     </div>
                 </div>
             </div>
 
+            {/* Error */}
+            {error && (
+                <p className="mt-4 text-sm font-medium text-red-600">
+                    {error}
+                </p>
+            )}
+
+            {/* Button */}
             <div className="mt-6">
                 <button
                     onClick={handleParkVehicle}
                     disabled={loading}
                     type="button"
-                    className="rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
+                    className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5
+                               font-medium text-white transition
+                               hover:bg-blue-700
+                               disabled:cursor-not-allowed disabled:opacity-70"
                 >
+                    {loading && (
+                        <LoaderCircle className="h-4 w-4 animate-spin" />
+                    )}
+
                     {loading ? "Parking..." : "Park Vehicle"}
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default EntryParking
+export default EntryParking;
